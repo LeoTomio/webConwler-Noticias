@@ -16,16 +16,17 @@ class RadioCidadeCrawler {
 
     public function getParagrafos() {
 
-        $arrayparagrafos = array(1);
+        $arrayparagrafos = array();
+
         $this->carregarHtml();
         $tagsDiv = $this->capturarTagsDivGeral();
         $divsInternas = $this->capturarDivsInternasPageContent($tagsDiv);
         $tagsH4 = $this->pegandoTagH4($divsInternas);
         $Desc = $this->pegandoANoticia($divsInternas);
-        $arraypararafos = $this->getArrayParagrafos($tagsH4);
-        $arraypararafos = $this->getArrayNoticias($Desc);
-
-        return $arraypararafos;
+        $arrayparagrafos[0] = $this->getArrayParagrafos($tagsH4);
+        $arrayparagrafos[1] = $this->getArrayNoticias($Desc);
+        return $arrayparagrafos;
+        
     }
 
     private function getContextoConexao() {
@@ -83,6 +84,8 @@ class RadioCidadeCrawler {
                 $tagsH4 = $interna->getElementsByTagName('h4');      //Pega as divs internas da div page_content
                 break;
             }
+            
+            
         }
         return $tagsH4;
     }
@@ -90,32 +93,31 @@ class RadioCidadeCrawler {
     private function pegandoANoticia($divsInternas) {
 
         $divNoti = array();
+        $divNotiFiltrada = array();
+
         foreach ($divsInternas as $internas) {                                            //Pega as tags Div
             $classe = $internas->getAttribute('class');
 
             if ($classe == 'col s12') {                            //Pega a classe chamada page_content
                 $divNoti = $internas->getElementsByTagName('div');      //Pega as divs internas da div page_content
-                break;
             }
+            
+            
         }
+
         return $divNoti;
     }
 
     private function getArrayParagrafos($tagsH4) {
         $arrayH4 = [];
-        $a;
-
         foreach ($tagsH4 as $h4) {
             $arrayH4[] = $h4->nodeValue;                          //Imprime todos os paragrafos
         }
-
-
         return $arrayH4;
     }
 
     private function getArrayNoticias($divNoti) {
         $arrayDesc = [];
-
         foreach ($divNoti as $desc) {
             $arrayDesc[] = $desc->nodeValue;                          //Imprime todos os paragrafos
         }
