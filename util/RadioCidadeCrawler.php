@@ -16,11 +16,15 @@ class RadioCidadeCrawler {
 
     public function getParagrafos() {
 
+        $arrayparagrafos = array(1);
         $this->carregarHtml();
         $tagsDiv = $this->capturarTagsDivGeral();
         $divsInternas = $this->capturarDivsInternasPageContent($tagsDiv);
         $tagsH4 = $this->pegandoTagH4($divsInternas);
+        $Desc = $this->pegandoANoticia($divsInternas);
         $arraypararafos = $this->getArrayParagrafos($tagsH4);
+        $arraypararafos = $this->getArrayNoticias($Desc);
+
         return $arraypararafos;
     }
 
@@ -61,7 +65,7 @@ class RadioCidadeCrawler {
         foreach ($divsGeral as $div) {                                            //Pega as tags Div
             $classe = $div->getAttribute('class');
 
-            if ($classe == 'content') {                            //Pega a classe chamada page_content
+            if ($classe == 'col s12 m12 l12') {                            //Pega a classe chamada page_content
                 $divsInternas = $div->getElementsByTagName('div');      //Pega as divs internas da div page_content
                 break;
             }
@@ -69,27 +73,54 @@ class RadioCidadeCrawler {
         return $divsInternas;
     }
 
-    private function pegandoTagH4($divsInternas) {   
-        
-         $tagsH4 = array();
+    private function pegandoTagH4($divsInternas) {
+
+        $tagsH4 = array();
         foreach ($divsInternas as $interna) {                                            //Pega as tags Div
             $classe = $interna->getAttribute('class');
 
             if ($classe == 'col s12 ') {                            //Pega a classe chamada page_content
-                $tagsH4 = $div->getElementsByTagName('h4');      //Pega as divs internas da div page_content
+                $tagsH4 = $interna->getElementsByTagName('h4');      //Pega as divs internas da div page_content
                 break;
             }
         }
         return $tagsH4;
     }
-    
+
+    private function pegandoANoticia($divsInternas) {
+
+        $divNoti = array();
+        foreach ($divsInternas as $internas) {                                            //Pega as tags Div
+            $classe = $internas->getAttribute('class');
+
+            if ($classe == 'col s12') {                            //Pega a classe chamada page_content
+                $divNoti = $internas->getElementsByTagName('div');      //Pega as divs internas da div page_content
+                break;
+            }
+        }
+        return $divNoti;
+    }
+
     private function getArrayParagrafos($tagsH4) {
         $arrayH4 = [];
+        $a;
 
         foreach ($tagsH4 as $h4) {
             $arrayH4[] = $h4->nodeValue;                          //Imprime todos os paragrafos
         }
+
+
         return $arrayH4;
+    }
+
+    private function getArrayNoticias($divNoti) {
+        $arrayDesc = [];
+
+        foreach ($divNoti as $desc) {
+            $arrayDesc[] = $desc->nodeValue;                          //Imprime todos os paragrafos
+        }
+
+        return $arrayDesc;
     }
 
 }
